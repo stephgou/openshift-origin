@@ -1,5 +1,13 @@
 #!/bin/bash
 
+function fix_etc_hosts()
+{
+	echo "Add hostame and ip in hosts file ..."
+	IP=$(ip addr show eth0 | grep inet | grep -v inet6 | awk '{ print $2; }' | sed 's?/.*$??')
+	HOST=$(hostname)
+	echo "${IP}" "${HOST}" | sudo tee -a "${HOST_FILE}"
+}
+
 echo $(date) " - Starting Script"
 
 # Install EPEL repository
@@ -39,6 +47,8 @@ else
     echo $(date) " - Root File System failed to be grown"
 	exit 20
 fi
+
+fix_etc_hosts
 
 # Install Docker 1.13.x
 echo $(date) " - Installing Docker 1.13.x"
